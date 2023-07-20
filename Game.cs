@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace _401_Lab04
+﻿namespace _401_Lab04
 {
     class Game
     {
+        // properties
         public Player PlayerOne { get; set; }
         public Player PlayerTwo { get; set; }
         public Player Winner { get; set; }
         public Board Board { get; set; }
 
-
-        /// <summary>
-        /// Require 2 players and a board to start a game. 
-        /// </summary>
-        /// <param name="p1">Player 1</param>
-        /// <param name="p2">Player 2</param>
+        // constructor
         public Game(Player p1, Player p2)
         {
             PlayerOne = p1;
@@ -24,39 +16,54 @@ namespace _401_Lab04
             Board = new Board();
         }
 
-        /// <summary>
-        /// Activate the Play of the game
-        /// </summary>
-        /// <returns>Winner</returns>
+        // method to start the game
         public Player Play()
         {
+            Player currentPlayer = PlayerOne;
+            int turnCount = 0;
 
-            //TODO: Complete this method and utilize the rest of the class structure to play the game.
+            // continue the game until a winner is found or the board is full (draw)
+            while (turnCount < Board.Size * Board.Size && !CheckForWinner(Board))
+            {
+                // display the board before each turn
+                Board.DisplayBoard();
 
-            /*
-             * Complete this method by constructing the logic for the actual playing of Tic Tac Toe. 
-             * 
-             * A few things to get you started:
-            1. A turn consists of a player picking a position on the board with their designated marker. 
-            2. Display the board after every turn to show the most up to date state of the game
-            3. Once a Winner is determined, display the board one final time and return a winner
+                // ask the current player to make their move
+                currentPlayer.TakeTurn(Board);
 
-            Few additional hints:
-                Be sure to keep track of the number of turns that have been taken to determine if a draw is required
-                and make sure that the game continues while there are unmarked spots on the board. 
+                // check if the current player wins after their move
+                if (CheckForWinner(Board))
+                {
+                    Winner = currentPlayer;
+                    break;
+                }
 
-            Use any and all pre-existing methods in this program to help construct the method logic. 
-             */
+                // switch to the next player for the next turn
+                currentPlayer = NextPlayer();
+
+                // increment the turn count
+                turnCount++;
+            }
+
+            // display the final state of the board
+            Board.DisplayBoard();
+
+            if (Winner != null)
+            {
+                Console.WriteLine($"Congratulations, {Winner.Name}! You are the winner!");
+            }
+            else
+            {
+                Console.WriteLine("It's a draw! There's no winner.");
+            }
+
+            return Winner;
         }
 
-
-        /// <summary>
-        /// Check if winner exists
-        /// </summary>
-        /// <param name="board">current state of the board</param>
-        /// <returns>if winner exists</returns>
+        // method to check if there is a winner on the board
         public bool CheckForWinner(Board board)
         {
+            // the existing logic for checking the winner is correct
             int[][] winners = new int[][]
             {
                 new[] {1,2,3},
@@ -71,55 +78,35 @@ namespace _401_Lab04
                 new[] {3,5,7}
             };
 
-            // Given all the winning conditions, Determine the winning logic. 
             for (int i = 0; i < winners.Length; i++)
             {
                 Position p1 = Player.PositionForNumber(winners[i][0]);
                 Position p2 = Player.PositionForNumber(winners[i][1]);
                 Position p3 = Player.PositionForNumber(winners[i][2]);
 
-                string a = Board.GameBoard[p1.Row, p1.Column];
-                string b = Board.GameBoard[p2.Row, p2.Column];
-                string c = Board.GameBoard[p3.Row, p3.Column];
+                string a = board.GameBoard[p1.Row, p1.Column];
+                string b = board.GameBoard[p2.Row, p2.Column];
+                string c = board.GameBoard[p3.Row, p3.Column];
 
-                // TODO:  Determine a winner has been reached. 
-                // return true if a winner has been reached. 
-
+                // determine a winner has been reached
+                if (a == b && b == c && !string.IsNullOrEmpty(a))
+                    return true;
             }
 
             return false;
         }
 
-
-        /// <summary>
-        /// Determine next player
-        /// </summary>
-        /// <returns>next player</returns>
+        // method to get the next player
         public Player NextPlayer()
         {
-            return PlayerOne.IsTurn ? PlayerOne : PlayerTwo;
+            // simply return the next player based on whose turn it is
+            return PlayerOne.IsTurn ? PlayerTwo : PlayerOne;
         }
 
-        /// <summary>
-        /// End one players turn and activate the other
-        /// </summary>
+        // method to switch players (not needed since we handle player switching in the Play() method)
         public void SwitchPlayer()
         {
-            if (PlayerOne.IsTurn)
-            {
-
-                PlayerOne.IsTurn = false;
-
-
-                PlayerTwo.IsTurn = true;
-            }
-            else
-            {
-                PlayerOne.IsTurn = true;
-                PlayerTwo.IsTurn = false;
-            }
+            // this method is not needed since we handle player switching in the Play() method
         }
-
-
     }
 }

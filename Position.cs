@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace _401_Lab04
+﻿namespace _401_Lab04
 {
     class Position
     {
